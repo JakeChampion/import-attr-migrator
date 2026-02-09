@@ -214,6 +214,53 @@ func TestMigrateAssertToWith_DynamicImport(t *testing.T) {
 	}
 }
 
+func TestMigrateAssertToWith_Comprehensive(t *testing.T) {
+	input := `import { createRequire } from 'node:module';
+import data from './data.json' assert { type: 'json' };
+import systemOfADown from './system;of;a;down.json' assert { type: 'json' };
+import { default as config } from './config.json'assert{type: 'json'};
+import { thing } from "./data.json"assert{type: 'json'};
+import { fileURLToPath } from 'node:url' invalid { };
+const require = createRequire(import.meta.url);
+const foo = require('./foo.ts');
+
+const data2 = await import('./data2.json', {
+	assert: { type: 'json' },
+});
+
+await import('foo-bis');
+`
+	want := `import { createRequire } from 'node:module';
+import data from './data.json' with { type: 'json' };
+import systemOfADown from './system;of;a;down.json' with { type: 'json' };
+import { default as config } from './config.json'with{type: 'json'};
+import { thing } from "./data.json"with{type: 'json'};
+import { fileURLToPath } from 'node:url' invalid { };
+const require = createRequire(import.meta.url);
+const foo = require('./foo.ts');
+
+const data2 = await import('./data2.json', {
+	with: { type: 'json' },
+});
+
+await import('foo-bis');
+`
+
+	result, err := MigrateAssertToWith([]byte(input), JavaScript)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	if result.Replacements != 5 {
+		t.Errorf("replacement count: got %d, want 5", result.Replacements)
+	}
+
+	got := string(result.Output)
+	if got != want {
+		t.Errorf("output mismatch:\n  got:\n%s\n  want:\n%s", got, want)
+	}
+}
+
 func TestDumpTree(t *testing.T) {
 	input := `import data from './data.json' assert { type: 'json' };`
 	sexp, err := DumpTree([]byte(input), JavaScript)
