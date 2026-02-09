@@ -193,6 +193,109 @@ func TestMigrateAssertToWith_DynamicImport(t *testing.T) {
 			want:  `console.assert(true, 'should be true');`,
 			wantN: 0,
 		},
+		{
+			name: "static and multiple dynamic imports (js)",
+			input: "import data from './data.json' assert { type: 'json' };\n" +
+				"\n" +
+				"const data2 = await import('./data2.json', {\n" +
+				"\tassert: { type: 'json' },\n" +
+				"});\n" +
+				"\n" +
+				"await import('./data3.json', {\n" +
+				"\tassert: { type: 'json' },\n" +
+				"});\n" +
+				"\n" +
+				"await import('pkg');\n" +
+				"\n" +
+				"function getData4() {\n" +
+				"\timport('pkg-bis');\n" +
+				"\n" +
+				"\treturn import('./data4.json', {\n" +
+				"\t\tassert: { type: 'json' },\n" +
+				"\t});\n" +
+				"}\n",
+			lang: JavaScript,
+			want: "import data from './data.json' with { type: 'json' };\n" +
+				"\n" +
+				"const data2 = await import('./data2.json', {\n" +
+				"\twith: { type: 'json' },\n" +
+				"});\n" +
+				"\n" +
+				"await import('./data3.json', {\n" +
+				"\twith: { type: 'json' },\n" +
+				"});\n" +
+				"\n" +
+				"await import('pkg');\n" +
+				"\n" +
+				"function getData4() {\n" +
+				"\timport('pkg-bis');\n" +
+				"\n" +
+				"\treturn import('./data4.json', {\n" +
+				"\t\twith: { type: 'json' },\n" +
+				"\t});\n" +
+				"}\n",
+			wantN: 4,
+		},
+		{
+			name: "dynamic import in async function (cjs)",
+			input: "async function main() {\n" +
+				"\tconst data = await import('./data.json', { assert: { type: 'json' } });\n" +
+				"\tconst pkg = await import('pkg');\n" +
+				"\n" +
+				"\treturn data;\n" +
+				"}\n",
+			lang: JavaScript,
+			want: "async function main() {\n" +
+				"\tconst data = await import('./data.json', { with: { type: 'json' } });\n" +
+				"\tconst pkg = await import('pkg');\n" +
+				"\n" +
+				"\treturn data;\n" +
+				"}\n",
+			wantN: 1,
+		},
+		{
+			name: "static and multiple dynamic imports (mjs)",
+			input: "import data from './data.json' assert { type: 'json' };\n" +
+				"\n" +
+				"const data2 = await import('./data2.json', {\n" +
+				"\tassert: { type: 'json' },\n" +
+				"});\n" +
+				"\n" +
+				"await import('./data3.json', {\n" +
+				"\tassert: { type: 'json' },\n" +
+				"});\n" +
+				"\n" +
+				"await import('pkg');\n" +
+				"\n" +
+				"function getData4() {\n" +
+				"\timport('pkg-bis');\n" +
+				"\n" +
+				"\treturn import('./data4.json', {\n" +
+				"\t\tassert: { type: 'json' },\n" +
+				"\t});\n" +
+				"}\n",
+			lang: JavaScript,
+			want: "import data from './data.json' with { type: 'json' };\n" +
+				"\n" +
+				"const data2 = await import('./data2.json', {\n" +
+				"\twith: { type: 'json' },\n" +
+				"});\n" +
+				"\n" +
+				"await import('./data3.json', {\n" +
+				"\twith: { type: 'json' },\n" +
+				"});\n" +
+				"\n" +
+				"await import('pkg');\n" +
+				"\n" +
+				"function getData4() {\n" +
+				"\timport('pkg-bis');\n" +
+				"\n" +
+				"\treturn import('./data4.json', {\n" +
+				"\t\twith: { type: 'json' },\n" +
+				"\t});\n" +
+				"}\n",
+			wantN: 4,
+		},
 	}
 
 	for _, tt := range tests {
