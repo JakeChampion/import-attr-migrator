@@ -17,13 +17,13 @@ Node.js, Deno, and bundlers are migrating to the new syntax. This tool automates
 
 ```bash
 # Requires Go 1.22+ and CGO enabled (tree-sitter uses C parsers)
-go install github.com/JakeChampion/import-attr-migrator/cmd/migrate@latest
+go install github.com/netlify/import-attr-migrator/cmd/migrate@latest
 ```
 
 Or build from source:
 
 ```bash
-git clone https://github.com/JakeChampion/import-attr-migrator
+git clone https://github.com/netlify/import-attr-migrator
 cd import-attr-migrator
 go build -o migrate ./cmd/migrate
 ```
@@ -68,7 +68,7 @@ The tool automatically skips `node_modules`, `vendor`, `dist`, `build`, and hidd
 The `transform` package can be imported directly for use in other Go programs:
 
 ```bash
-go get github.com/JakeChampion/import-attr-migrator
+go get github.com/netlify/import-attr-migrator
 ```
 
 ```go
@@ -78,7 +78,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/JakeChampion/import-attr-migrator/transform"
+	"github.com/netlify/import-attr-migrator/transform"
 )
 
 func main() {

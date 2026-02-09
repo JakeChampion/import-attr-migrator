@@ -23,7 +23,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/JakeChampion/import-attr-migrator/transform"
+	"github.com/netlify/import-attr-migrator/transform"
 )
 
 func main() {

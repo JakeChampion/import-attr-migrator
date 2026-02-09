@@ -1,4 +1,4 @@
-module github.com/JakeChampion/import-attr-migrator
+module github.com/netlify/import-attr-migrator
 
 go 1.23
 
