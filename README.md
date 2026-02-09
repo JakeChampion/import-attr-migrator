@@ -17,13 +17,13 @@ Node.js, Deno, and bundlers are migrating to the new syntax. This tool automates
 
 ```bash
 # Requires Go 1.22+ and CGO enabled (tree-sitter uses C parsers)
-go install github.com/user/import-attr-migrator/cmd/migrate@latest
+go install github.com/JakeChampion/import-attr-migrator/cmd/migrate@latest
 ```
 
 Or build from source:
 
 ```bash
-git clone https://github.com/user/import-attr-migrator
+git clone https://github.com/JakeChampion/import-attr-migrator
 cd import-attr-migrator
 go build -o migrate ./cmd/migrate
 ```
@@ -63,6 +63,42 @@ migrate -w -ext ".js,.mjs" ./src
 
 The tool automatically skips `node_modules`, `vendor`, `dist`, `build`, and hidden directories (starting with `.`).
 
+## Library usage
+
+The `transform` package can be imported directly for use in other Go programs:
+
+```bash
+go get github.com/JakeChampion/import-attr-migrator
+```
+
+```go
+package main
+
+import (
+	"fmt"
+	"log"
+
+	"github.com/JakeChampion/import-attr-migrator/transform"
+)
+
+func main() {
+	source := []byte(`import data from './data.json' assert { type: 'json' };`)
+
+	result, err := transform.MigrateAssertToWith(source, transform.JavaScript)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Printf("%d replacement(s)\n", result.Replacements)
+	fmt.Println(string(result.Output))
+	// Output:
+	// 1 replacement(s)
+	// import data from './data.json' with { type: 'json' };
+}
+```
+
+Supported languages: `transform.JavaScript`, `transform.TypeScript`, `transform.TSX`.
+
 ## How it works
 
 1. Parses each file using the appropriate tree-sitter grammar (JavaScript, TypeScript, or TSX)
@@ -95,7 +131,7 @@ Because it operates on the CST rather than regex, it won't accidentally replace 
 go test ./...
 
 # Run tests with verbose output (see S-expression dumps)
-go test -v ./internal/transform/
+go test -v ./transform/
 
 # Build
 go build -o migrate ./cmd/migrate

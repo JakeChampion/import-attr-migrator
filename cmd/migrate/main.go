@@ -23,7 +23,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/JakeChampion/import-attr-migrator/internal/transform"
+	"github.com/JakeChampion/import-attr-migrator/transform"
 )
 
 func main() {
